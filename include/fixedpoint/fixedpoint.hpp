@@ -5,131 +5,142 @@
 
 namespace fixed_point {
 
-	template<typename TStorage, uint8_t M, uint8_t N>
+	template<uint8_t M, uint8_t N>
 	class scaled_int;
 
 	namespace detail {
 
 		template<bool>
-		struct verify_size;
+		struct static_assert_;
 
 		template<>
-		struct verify_size<true>
+		struct static_assert_<true>
 		{};
 
-		template<typename T>
-		struct Intermediate;
+		template<uint8_t TSize>
+		struct storage;
 
 		template<>
-		struct Intermediate<uint8_t>
+		struct storage<7>
 		{
-			typedef uint16_t type;
+			typedef int8_t type;
 		};
 
 		template<>
-		struct Intermediate<uint16_t>
-		{
-			typedef uint32_t type;
-		};
-
-		template<>
-		struct Intermediate<uint32_t>
-		{
-			typedef uint64_t type;
-		};
-
-		template<>
-		struct Intermediate<int8_t>
+		struct storage<15>
 		{
 			typedef int16_t type;
 		};
 
 		template<>
-		struct Intermediate<int16_t>
+		struct storage<31>
+		{
+			typedef int32_t type;
+		};
+
+		template<uint8_t TSize>
+		struct intermediate_storage;
+
+		template<>
+		struct intermediate_storage<7>
+		{
+			typedef int16_t type;
+		};
+
+		template<>
+		struct intermediate_storage<15>
 		{
 			typedef int32_t type;
 		};
 
 		template<>
-		struct Intermediate<int32_t>
+		struct intermediate_storage<31>
+		{
+			typedef int64_t type;
+		};
+
+		template<>
+		struct intermediate_storage<63>
 		{
 			typedef int64_t type;
 		};
 
 	} // namespace detail
 
-	template<typename TStorage, uint8_t M, uint8_t N>
+	template<uint8_t M, uint8_t N>
 	struct unscaled_int
 	{
-		explicit unscaled_int(const TStorage& value)
+		typedef typename detail::storage<M + N>::type storage_type;
+
+		explicit unscaled_int(const storage_type& value)
 			: value(value)
 		{
-			detail::verify_size<M + N == 8 * sizeof(TStorage)>();
+			detail::static_assert_<M + N + 1== 8 * sizeof(storage_type)>();
 		}
 
-		scaled_int<TStorage, M, N> scale() const
+		scaled_int<M, N> scale() const
 		{
-			return scaled_int<TStorage, M, N>(value << N);
+			return scaled_int<M, N>(value << N);
 		}
 
-		const TStorage value;
+		const storage_type value;
 	};
 
 #ifdef WITH_FLOAT_CONVERSION
-	template<typename TStorage, uint8_t M, uint8_t N>
+	template<uint8_t M, uint8_t N>
 	struct unscaled_float
 	{
+		typedef typename detail::storage<M + N>::type storage_type;
+
 		explicit unscaled_float(const float& value)
 			: value(value)
 		{
-			detail::verify_size<M + N == 8 * sizeof(TStorage)>();
+			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
 		}
 
-		scaled_int<TStorage, M, N> scale() const
+		scaled_int<M, N> scale() const
 		{
-			return scaled_int<TStorage, M, N>(static_cast<TStorage>(value * (1 << N)));
+			return scaled_int<M, N>(static_cast<storage_type>(value * (1 << N)));
 		}
 
 		const float value;
 	};
 #endif
 
-	/** unsigned integer:
-	*                range: [0, 2^M - 2^(-N)]
-	*           resolution: 2^(-N)
-	*
+	/**
 	*   signed integer:
-	*                range: [-(2^(M-1) - 2^(-N)), 2^(M-1) - 2^(-N)]
+	*                range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] NOTE: M+N = 7,15,31
 	*           resolution: 2^(-N)
 	*/
-	template<typename TStorage, uint8_t M, uint8_t N>
+	template<uint8_t M, uint8_t N>
 	class scaled_int
 	{
 	public:
-		typedef scaled_int<TStorage, M, N>						scaled_int_type;
-		typedef typename detail::Intermediate<TStorage>::type	intermediate_type;
-		typedef unscaled_int<TStorage, M, N>				    unscaled_int_type;
+		typedef scaled_int<M, N>									scaled_int_type;
+		typedef typename detail::storage<M + N>::type				storage_type;
+		typedef typename detail::intermediate_storage<M+N>::type	intermediate_type;
+		typedef unscaled_int<M, N>									unscaled_int_type;
 #ifdef WITH_FLOAT_CONVERSION
-		typedef unscaled_float<TStorage, M, N>				    unscaled_float_type;
+		typedef unscaled_float<M, N>								unscaled_float_type;
 #endif
 
 		scaled_int()
 			: mValue(0)
 		{
-			detail::verify_size<M + N == 8 * sizeof(TStorage)>();
+			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
 		}
 
-		scaled_int(const TStorage& scaledValue)
+		scaled_int(const storage_type& scaledValue)
 			: mValue(scaledValue)
 		{
-			detail::verify_size<M + N == 8 * sizeof(TStorage)>();
+			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
 		}
 
 		scaled_int(const scaled_int_type& scaledValue)
 			: mValue(scaledValue.mValue)
 		{}
 
-		const TStorage& getValue() const
+		const storage_type& getValue() const
 		{
 			return mValue;
 		}
@@ -260,12 +271,12 @@ namespace fixed_point {
 		}
 
 	private:
-		TStorage mValue;
+		storage_type mValue;
 	};
 
-	typedef scaled_int<int8_t, 4, 4> scaled_int_4_4_t;
-	typedef scaled_int<int16_t, 8, 8> scaled_int_8_8_t;
-	typedef scaled_int<int32_t, 16, 16> scaled_int_16_16_t;
+	typedef scaled_int<3, 4> scaled_int_3_4_t;
+	typedef scaled_int<7, 8> scaled_int_7_8_t;
+	typedef scaled_int<15, 16> scaled_int_15_16_t;
 
 } // namespace fixed_point
 

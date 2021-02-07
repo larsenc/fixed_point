@@ -178,7 +178,7 @@ namespace fixed_point {
 			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
 		}
 
-		scaled_int(const storage_type& scaledValue)
+		explicit scaled_int(const storage_type& scaledValue)
 			: mValue(scaledValue)
 		{
 			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();

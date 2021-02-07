@@ -149,7 +149,7 @@ namespace fixed_point {
 			: mValue(unscaled.scale().mValue)
 		{}
 
-		unscaled_int_type unscale() const
+		unscaled_int_type unscaleToInt() const
 		{
 			return unscaled_int_type(mValue / (1 << N));
 		}
@@ -159,7 +159,7 @@ namespace fixed_point {
 			: mValue(unscaled.scale().mValue)
 		{}
 
-		unscaled_float_type unscale_to_float() const
+		unscaled_float_type unscaleToFloat() const
 		{
 			return unscaled_float_type(static_cast<float>(mValue) / (1 << N));
 		}

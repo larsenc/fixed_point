@@ -172,6 +172,8 @@ namespace fixed_point {
 		typedef unscaled_float<M, N>								unscaled_float_type;
 #endif
 
+		enum { SCALE = 1 << N };
+
 		scaled_int()
 			: mValue(0)
 		{
@@ -199,7 +201,7 @@ namespace fixed_point {
 
 		unscaled_int_type unscaleToInt() const
 		{
-			return unscaled_int_type(mValue / (1 << N));
+			return unscaled_int_type(mValue / SCALE);
 		}
 
 #ifdef WITH_FLOAT_CONVERSION
@@ -209,7 +211,7 @@ namespace fixed_point {
 
 		unscaled_float_type unscaleToFloat() const
 		{
-			return unscaled_float_type(static_cast<float>(mValue) / (1 << N));
+			return unscaled_float_type(static_cast<float>(mValue) / SCALE);
 		}
 #endif
 

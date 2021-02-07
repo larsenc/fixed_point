@@ -23,6 +23,33 @@ namespace Catch {
     };
 }
 
+TEST_CASE("scaling", "[scaled_int]") {
+
+    SECTION("initialization from unscaled_int") {
+
+        unscaled_int<3, 4> unscaled(5);
+        scaled_int<3, 4> scaled = unscaled.scale();
+
+        REQUIRE(scaled.getValue() == 80);
+
+        SECTION("scaling back down to an int should without any changes should result in the same value as it was constructed from") {
+            REQUIRE(scaled.unscaleToInt().value == 5);
+        }
+    }
+
+    SECTION("initialization from unscaled_float") {
+
+        unscaled_float<3, 4> unscaled(0.875f);
+        scaled_int<3, 4> scaled = unscaled.scale();
+
+        REQUIRE(scaled.getValue() == 14);
+
+        SECTION("scaling back down to a float should without any changes should result in the same value as it was constructed from") {
+            REQUIRE(scaled.unscaleToFloat().value == 0.875f);
+        }
+    }
+}
+
 TEST_CASE("multiplication", "[multiplication]") {
 
     typedef scaled_int_3_4_t::unscaled_int_type unscaled_int_3_4_t;

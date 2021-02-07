@@ -1,6 +1,8 @@
 #ifndef FIXED_POINT_HPP
 #define FIXED_POINT_HPP
 
+#include <stdint.h>
+
 namespace fixed_point {
 
 	template<typename TStorage, uint8_t M, uint8_t N>

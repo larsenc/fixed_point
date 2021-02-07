@@ -1,9 +1,10 @@
 #define CATCH_CONFIG_RUNNER
 #define CATCH_CONFIG_NO_CPP11
 
+#include <fixedpoint/fixedpoint.hpp>
+
 #include "catch/catch.hpp"
 
-#include <fixedpoint/fixedpoint.hpp>
 
 using namespace fixed_point;
 

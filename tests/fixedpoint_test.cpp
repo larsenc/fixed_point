@@ -74,8 +74,52 @@ TEST_CASE("division", "[division]") {
 
 }
 
-TEST_CASE("rounding", "[scaled_int_4_4_t]") {
-    // See part 3
+TEST_CASE("converting a Q7.8 to a Q3.4 with rounding", "[convert]") {
+
+    typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
+    typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
+
+    SECTION("Q7.8 : 2.03125f this is the halfway case and should be rounded away from zero when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(2.03125f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(2.0625f));
+        REQUIRE(a == b);
+    }
+
+    SECTION("Q7.8 : 2.02734375f is rounded down when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(2.02734375f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(2.0f));
+        REQUIRE(a == b);
+    }
+
+    SECTION("Q7.8 : 2.0390625 is rounded up when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(2.0390625f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(2.0625f));
+        REQUIRE(a == b);
+    }
+}
+
+TEST_CASE("converting a negative Q7.8 to a Q3.4 with rounding", "[convert]") {
+
+        typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
+        typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
+
+    SECTION("Q7.8 : -2.03125f this is the halfway case and should be rounded away from zero when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(-2.03125f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(-2.0625f));
+        REQUIRE(a == b);
+    }
+
+    SECTION("Q7.8 : -2.02734375f is rounded up when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(-2.02734375f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(-2.0f));
+        REQUIRE(a == b);
+    }
+
+    SECTION("Q7.8 : -2.0390625 is rounded down when converting to Q3.4") {
+        scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(-2.0390625f)).convert<3, 4>();
+        scaled_int_3_4_t b(unscaled_float_3_4_t(-2.0625f));
+        REQUIRE(a == b);
+    }
 }
 
 

@@ -65,6 +65,54 @@ namespace fixed_point {
 			typedef int64_t type;
 		};
 
+		template<uint8_t M_OLD, uint8_t N_OLD, uint8_t M_NEW, uint8_t N_NEW, bool MORE_PRECISION>
+		struct converter;
+
+		template<uint8_t M_OLD, uint8_t N_OLD, uint8_t M_NEW, uint8_t N_NEW>
+		struct converter<M_OLD, N_OLD, M_NEW, N_NEW, true>
+		{
+			typedef typename detail::storage<M_NEW + N_NEW>::type new_storage_type;
+
+			// For the case N_OLD <= N_NEW we need to shift left.
+			static scaled_int<M_NEW, N_NEW> convert(const scaled_int<M_OLD, N_OLD>& old)
+			{
+				detail::static_assert_<N_OLD <= N_NEW>();
+				new_storage_type newValue = old.getValue();
+				newValue <<= -(N_OLD - N_NEW);
+				return scaled_int<M_NEW, N_NEW>(newValue);
+			}
+		};
+
+		template<uint8_t M_OLD, uint8_t N_OLD, uint8_t M_NEW, uint8_t N_NEW>
+		struct converter<M_OLD, N_OLD, M_NEW, N_NEW, false>
+		{
+			typedef typename detail::storage<M_OLD + N_OLD>::type old_storage_type;
+			typedef typename detail::storage<M_NEW + N_NEW>::type new_storage_type;
+
+			// For the case N_OLD > N_NEW we need to shift right and round
+			static scaled_int<M_NEW, N_NEW> convert(const scaled_int<M_OLD, N_OLD>& old)
+			{
+				detail::static_assert_<(N_OLD > N_NEW)>();
+				// Since we are decreasing the resolution, we need to round the old value.
+				// We therefore add half the resolution of the old value before shifting right
+				old_storage_type newValue = old.getValue();
+
+
+				// Right shift of signed ints are compiler specific. I therefore want to use / instead of right shift.
+				// TODO: Determine if there is a more efficient way when using /
+				if (newValue < 0) {
+					newValue -= (1 << (N_OLD - N_NEW - 1));
+				}
+				else {
+					newValue += (1 << (N_OLD - N_NEW - 1));
+
+				}
+				newValue = newValue / (1 << (N_OLD - N_NEW));
+
+				return scaled_int<M_NEW, N_NEW>(static_cast<new_storage_type>(newValue));
+			}
+		};
+
 	} // namespace detail
 
 	template<uint8_t M, uint8_t N>
@@ -164,6 +212,12 @@ namespace fixed_point {
 			return unscaled_float_type(static_cast<float>(mValue) / (1 << N));
 		}
 #endif
+
+		template<uint8_t M_NEW, uint8_t N_NEW>
+		scaled_int<M_NEW, N_NEW> convert() const
+		{
+			return detail::converter<M, N, M_NEW, N_NEW, (N <= N_NEW)>::convert(*this);
+		}
 
 		/** Arithmetic https://en.cppreference.com/w/cpp/language/operator_arithmetic
 		* a + b

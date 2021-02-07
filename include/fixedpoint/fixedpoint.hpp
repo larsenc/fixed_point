@@ -97,7 +97,6 @@ namespace fixed_point {
 				// We therefore add half the resolution of the old value before shifting right
 				old_storage_type newValue = old.getValue();
 
-
 				// Right shift of signed ints are compiler specific. I therefore want to use / instead of right shift.
 				// TODO: Determine if there is a more efficient way when using /
 				if (newValue < 0) {
@@ -156,9 +155,24 @@ namespace fixed_point {
 #endif
 
 	/**
-	*   signed integer:
-	*                range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] NOTE: M+N = 7,15,31
-	*           resolution: 2^(-N)
+	*  scaled_int uses the Q format where M is the number of xx bits and N is the number of fraction bits.
+	*
+	*        Range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] NOTE: M+N = 7,15,31
+	*   Resolution: 2^(-N)
+	*
+	* Implemented operators:
+	*	Arthmetic:
+	*		a + b
+	*		a - b
+	*		a * b
+	*		a / b
+	*	Comparison:
+	*		a == b
+	*		a != b
+	*		a < b
+	*		a > b
+	*		a <= b
+	*		a >= b
 	*/
 	template<uint8_t M, uint8_t N>
 	class scaled_int
@@ -190,14 +204,26 @@ namespace fixed_point {
 			: mValue(scaledValue.mValue)
 		{}
 
+		scaled_int(const unscaled_int_type& unscaled)
+			: mValue(unscaled.scale().mValue)
+		{}
+
+#ifdef WITH_FLOAT_CONVERSION
+		scaled_int(const unscaled_float_type& unscaled)
+			: mValue(unscaled.scale().mValue)
+		{}
+#endif
+
+		scaled_int_type& operator=(const scaled_int_type& rhs)
+		{
+			mValue = rhs.mValue;
+			return *this;
+		}
+
 		const storage_type& getValue() const
 		{
 			return mValue;
 		}
-
-		scaled_int(const unscaled_int_type& unscaled)
-			: mValue(unscaled.scale().mValue)
-		{}
 
 		unscaled_int_type unscaleToInt() const
 		{
@@ -205,57 +231,77 @@ namespace fixed_point {
 		}
 
 #ifdef WITH_FLOAT_CONVERSION
-		scaled_int(const unscaled_float_type& unscaled)
-			: mValue(unscaled.scale().mValue)
-		{}
-
 		unscaled_float_type unscaleToFloat() const
 		{
 			return unscaled_float_type(static_cast<float>(mValue) / SCALE);
 		}
 #endif
 
+		/**
+		*	Convert to another Q format.
+		*/
 		template<uint8_t M_NEW, uint8_t N_NEW>
 		scaled_int<M_NEW, N_NEW> convert() const
 		{
 			return detail::converter<M, N, M_NEW, N_NEW, (N <= N_NEW)>::convert(*this);
 		}
 
-		/** Arithmetic https://en.cppreference.com/w/cpp/language/operator_arithmetic
-		* a + b
-		* a - b
-		* a * b
-		* a / b
+		/**
+		*	Addition
 		*/
 		scaled_int_type operator+(const scaled_int_type& rhs)
 		{
 			return scaled_int_type(mValue + rhs.mValue);
 		}
 
+		scaled_int_type& operator+=(const scaled_int_type& rhs)
+		{
+			mValue += rhs.mValue;
+			return *this;
+		}
+
+		/**
+		*	Subtraction
+		*/
 		scaled_int_type operator-(const scaled_int_type& rhs)
 		{
 			return scaled_int_type(mValue - rhs.mValue);
 		}
 
+		scaled_int_type& operator-=(const scaled_int_type& rhs)
+		{
+			mValue -= rhs.mValue;
+			return *this;
+		}
+
+		/**
+		*	Division
+		*/
 		scaled_int_type operator/(const scaled_int_type& rhs)
 		{
 			const intermediate_type intermediate = mValue / rhs.mValue;
 			return scaled_int_type(intermediate << N);
 		}
 
-		scaled_int_type operator*(const scaled_int_type& rhs)
+		scaled_int_type& operator/=(const scaled_int_type& rhs)
 		{
-			const intermediate_type intermediate = mValue * rhs.mValue;
-			return scaled_int_type(intermediate >> N);
+			const intermediate_type intermediate = mValue / rhs.mValue;
+			mValue = intermediate << N;
+			return *this;
 		}
 
-		/** Comparison
-		* a == b
-		* a != b
-		* a < b
-		* a > b
-		* a <= b
-		* a >= b
+		/**
+		*	Multiplication
+		*/
+		scaled_int_type& operator*=(const scaled_int_type& rhs)
+		{
+			const intermediate_type intermediate = mValue * rhs.mValue;
+			mValue = intermediate >> N; // TODO: Is shifting here always safe?
+			return *this;
+		}
+
+		/**
+		* Comparison operators
 		*/
 		bool operator==(const scaled_int_type& rhs) const
 		{
@@ -287,54 +333,14 @@ namespace fixed_point {
 			return mValue >= rhs.mValue;
 		}
 
-		/** Assignment
-		* a = b
-		* a += b
-		* a -= b
-		* a *= b
-		* a /= b
-		*/
-		scaled_int_type& operator=(const scaled_int_type& rhs)
-		{
-			mValue = rhs.mValue;
-			return *this;
-		}
-
-		scaled_int_type& operator+=(const scaled_int_type& rhs)
-		{
-			mValue += rhs.mValue;
-			return *this;
-		}
-
-		scaled_int_type& operator-=(const scaled_int_type& rhs)
-		{
-			mValue -= rhs.mValue;
-			return *this;
-		}
-
-		scaled_int_type& operator*=(const scaled_int_type& rhs)
-		{
-			const intermediate_type intermediate = mValue * rhs.mValue;
-			mValue = intermediate >> N;
-			return *this;
-		}
-
-		scaled_int_type& operator/=(const scaled_int_type& rhs)
-		{
-			const intermediate_type intermediate = mValue / rhs.mValue;
-			mValue = intermediate << N;
-			return *this;
-		}
-
 	private:
 		storage_type mValue;
 	};
 
-	typedef scaled_int<3, 4> scaled_int_3_4_t;
-	typedef scaled_int<7, 8> scaled_int_7_8_t;
-	typedef scaled_int<15, 16> scaled_int_15_16_t;
+	typedef scaled_int<3, 4>	scaled_int_3_4_t;
+	typedef scaled_int<7, 8>	scaled_int_7_8_t;
+	typedef scaled_int<15, 16>	scaled_int_15_16_t;
 
 } // namespace fixed_point
-
 
 #endif // !FIXED_POINT_HPP

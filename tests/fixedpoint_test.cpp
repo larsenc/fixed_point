@@ -50,7 +50,7 @@ TEST_CASE("scaling", "[scaled_int]") {
     }
 }
 
-TEST_CASE("multiplication", "[multiplication]") {
+TEST_CASE("multiplication", "[scaled_int]") {
 
     typedef scaled_int_3_4_t::unscaled_int_type unscaled_int_3_4_t;
     typedef scaled_int_7_8_t::unscaled_int_type unscaled_int_7_8_t;
@@ -85,7 +85,7 @@ TEST_CASE("multiplication", "[multiplication]") {
     }
 }
 
-TEST_CASE("division", "[division]") {
+TEST_CASE("division", "[scaled_int]") {
 
     typedef scaled_int_7_8_t::unscaled_int_type unscaled_int_7_8_t;
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
@@ -101,7 +101,7 @@ TEST_CASE("division", "[division]") {
 
 }
 
-TEST_CASE("converting a Q7.8 to a Q3.4 with rounding", "[convert]") {
+TEST_CASE("converting a Q7.8 to a Q3.4 with rounding", "[scaled_int]") {
 
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
     typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
@@ -125,7 +125,7 @@ TEST_CASE("converting a Q7.8 to a Q3.4 with rounding", "[convert]") {
     }
 }
 
-TEST_CASE("converting a negative Q7.8 to a Q3.4 with rounding", "[convert]") {
+TEST_CASE("converting a negative Q7.8 to a Q3.4 with rounding", "[scaled_int]") {
 
         typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
         typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;

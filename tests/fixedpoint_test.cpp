@@ -58,30 +58,39 @@ TEST_CASE("multiplication", "[scaled_int]") {
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
     typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
 
-    SECTION("simple multiplication 0.375 * 0.5 = 0.1875") {
-        scaled_int_3_4_t x(unscaled_float_3_4_t(0.375f));
-        scaled_int_3_4_t y(unscaled_float_3_4_t(0.5f));
-
-        REQUIRE(x * y == unscaled_float_7_8_t(0.1875f).scale());
-    }
-
     SECTION("bigger intermediate storage is required when multiplying 3.0 * 1.0 = 3.0") {
         scaled_int_3_4_t x(unscaled_int_3_4_t(3));
         scaled_int_3_4_t y(unscaled_int_3_4_t(1));
 
-        REQUIRE(x * y == unscaled_int_7_8_t(3).scale());
+        REQUIRE(x * y == unscaled_int_3_4_t(3).scale());
     }
 
     SECTION("signed multiplication") {
-        scaled_int_3_4_t x(unscaled_int_3_4_t(3));
-        scaled_int_3_4_t x_(unscaled_int_3_4_t(-3));
+        {
+            scaled_int_3_4_t x(unscaled_int_3_4_t(3));
+            scaled_int_3_4_t x_(unscaled_int_3_4_t(-3));
 
-        scaled_int_3_4_t y(unscaled_int_3_4_t(1));
-        scaled_int_3_4_t y_(unscaled_int_3_4_t(-1));
+            scaled_int_3_4_t y(unscaled_int_3_4_t(1));
+            scaled_int_3_4_t y_(unscaled_int_3_4_t(-1));
 
-        REQUIRE(x_ * y == unscaled_int_7_8_t(-3).scale());
-        REQUIRE(x * y_ == unscaled_int_7_8_t(-3).scale());
-        REQUIRE(x_ * y_ == unscaled_int_7_8_t(3).scale());
+            REQUIRE(x * y == unscaled_int_3_4_t(3).scale());
+            REQUIRE(x_ * y == unscaled_int_3_4_t(-3).scale());
+            REQUIRE(x * y_ == unscaled_int_3_4_t(-3).scale());
+            REQUIRE(x_ * y_ == unscaled_int_3_4_t(3).scale());
+        }
+
+        {
+            scaled_int_3_4_t x(unscaled_float_3_4_t(0.375f));
+            scaled_int_3_4_t x_(unscaled_float_3_4_t(-0.375f));
+
+            scaled_int_3_4_t y(unscaled_float_3_4_t(0.5f));
+            scaled_int_3_4_t y_(unscaled_float_3_4_t(-0.5f));
+
+            REQUIRE(x * y == unscaled_float_3_4_t(0.1875f).scale());
+            REQUIRE(x_ * y == unscaled_float_3_4_t(-0.1875f).scale());
+            REQUIRE(x * y_ == unscaled_float_3_4_t(-0.1875f).scale());
+            REQUIRE(x_ * y_ == unscaled_float_3_4_t(0.1875f).scale());
+        }
     }
 }
 

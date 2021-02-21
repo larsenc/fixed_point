@@ -247,40 +247,18 @@ namespace fixed_point {
 		}
 
 		/**
-		*	Addition
+		*	Arthmetic assignment
 		*/
-		scaled_int_type operator+(const scaled_int_type& rhs)
-		{
-			return scaled_int_type(mValue + rhs.mValue);
-		}
-
 		scaled_int_type& operator+=(const scaled_int_type& rhs)
 		{
 			mValue += rhs.mValue;
 			return *this;
 		}
 
-		/**
-		*	Subtraction
-		*/
-		scaled_int_type operator-(const scaled_int_type& rhs)
-		{
-			return scaled_int_type(mValue - rhs.mValue);
-		}
-
 		scaled_int_type& operator-=(const scaled_int_type& rhs)
 		{
 			mValue -= rhs.mValue;
 			return *this;
-		}
-
-		/**
-		*	Division
-		*/
-		scaled_int_type operator/(const scaled_int_type& rhs)
-		{
-			const intermediate_type intermediate = mValue / rhs.mValue;
-			return scaled_int_type(intermediate << N);
 		}
 
 		scaled_int_type& operator/=(const scaled_int_type& rhs)
@@ -290,9 +268,6 @@ namespace fixed_point {
 			return *this;
 		}
 
-		/**
-		*	Multiplication
-		*/
 		scaled_int_type& operator*=(const scaled_int_type& rhs)
 		{
 			const intermediate_type intermediate = mValue * rhs.mValue;
@@ -301,7 +276,7 @@ namespace fixed_point {
 		}
 
 		/**
-		* Comparison operators
+		*	Comparison operators
 		*/
 		bool operator==(const scaled_int_type& rhs) const
 		{
@@ -336,6 +311,28 @@ namespace fixed_point {
 	private:
 		storage_type mValue;
 	};
+
+	/**
+	*	Arthmetic
+	*/
+	template<uint8_t M, uint8_t N>
+	scaled_int<M, N> operator+(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
+	{
+		return scaled_int<M, N>(lhs.getValue() + rhs.getValue());
+	}
+
+	template<uint8_t M, uint8_t N>
+	scaled_int<M, N> operator-(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
+	{
+		return scaled_int<M, N>(lhs.getValue() - rhs.getValue());
+	}
+
+	template<uint8_t M, uint8_t N>
+	scaled_int<M, N> operator/(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
+	{
+		const typename scaled_int<M, N>::intermediate_type intermediate = lhs.getValue() / rhs.getValue();
+		return scaled_int<M, N>(intermediate << N);
+	}
 
 	typedef scaled_int<3, 4>	scaled_int_3_4_t;
 	typedef scaled_int<7, 8>	scaled_int_7_8_t;

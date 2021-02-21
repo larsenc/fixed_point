@@ -170,14 +170,12 @@ TEST_CASE("division", "[scaled_int]") {
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
     typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
 
-    SECTION("simple division 10.0 * 5.0 = 2.0") {
+    SECTION("simple division 10.0 / 5.0 = 2.0") {
         scaled_int_7_8_t x(unscaled_int_7_8_t(10));
         scaled_int_7_8_t y(unscaled_int_7_8_t(5));
 
         REQUIRE(x / y == unscaled_int_7_8_t(2).scale());
     }
-
-
 }
 
 TEST_CASE("converting a Q7.8 to a Q3.4 with rounding", "[scaled_int]") {

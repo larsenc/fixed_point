@@ -282,7 +282,7 @@ namespace fixed_point {
 		scaled_int_type& operator*=(const scaled_int_type& rhs)
 		{
 			const intermediate_type intermediate = mValue * rhs.mValue;
-			mValue = intermediate >> N; // TODO: Is shifting here always safe?
+			mValue = detail::converter<2 * M + 1, 2 * N, M, N, (2 * N <= N)>::convert(intermediate);
 			return *this;
 		}
 

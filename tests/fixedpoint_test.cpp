@@ -92,6 +92,20 @@ TEST_CASE("multiplication", "[scaled_int]") {
             REQUIRE(x_ * y_ == unscaled_float_3_4_t(0.1875f).scale());
         }
     }
+
+    SECTION("signed assignment multiplication") {
+        scaled_int_3_4_t x(unscaled_float_3_4_t(1.3125f));
+
+        x *= scaled_int_3_4_t(unscaled_float_3_4_t(0.625f));
+
+        // Equals: 0.8203125, closes in Q3.4 is 0.8125
+        REQUIRE(x == unscaled_float_3_4_t(0.8125f).scale());
+
+        x *= scaled_int_3_4_t(unscaled_float_3_4_t(0.5f));
+
+        // Equals: 0.40625, should be rounded up to 0.4375, closes value in Q3.4
+        REQUIRE(x == unscaled_float_3_4_t(0.4375f).scale());
+    }
 }
 
 TEST_CASE("division", "[scaled_int]") {

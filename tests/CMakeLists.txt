@@ -6,7 +6,7 @@ add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
 # Define test source files
-set(TEST_SOURCES "fixedpoint_test.cpp")
+set(TEST_SOURCES "scaled_int_test.cpp")
 
 # Compile with c++98
 set(CMAKE_CXX_STANDARD 98)
@@ -14,6 +14,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Make test executable
-add_executable(fixedpoint_test ${TEST_SOURCES})
-target_compile_definitions(fixedpoint_test PRIVATE WITH_FLOAT_CONVERSION)
-target_link_libraries(fixedpoint_test PRIVATE fixedpoint Catch)
+add_executable(scaled_int_test ${TEST_SOURCES})
+target_compile_definitions(scaled_int_test PRIVATE WITH_FLOAT_CONVERSION)
+target_link_libraries(scaled_int_test PRIVATE fixedpoint Catch)

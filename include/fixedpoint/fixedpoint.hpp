@@ -345,11 +345,12 @@ namespace fixed_point {
 		return scaled_int<M, N>(intermediate << N);
 	}
 
-	template<uint8_t M, uint8_t N>
-	scaled_int<M, N> operator*(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
+	template<uint8_t M_LHS, uint8_t N_LHS, uint8_t M_RHS, uint8_t N_RHS>
+	scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> operator*(const scaled_int<M_LHS, N_LHS>& lhs, const scaled_int<M_RHS, N_RHS>& rhs)
 	{
-		const typename scaled_int<M, N>::intermediate_type intermediate = lhs.getValue() * rhs.getValue();
-		return scaled_int<M, N>(detail::converter<2 * M + 1, 2 * N, M, N, (2 * N <= N)>::convert(intermediate));
+		typedef scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> result_scaled_int_type;
+		typename result_scaled_int_type::storage_type resultValue = lhs.getValue() * rhs.getValue();
+		return result_scaled_int_type(resultValue);
 	}
 
 	typedef scaled_int<3, 4>	scaled_int_3_4_t;

@@ -62,7 +62,7 @@ TEST_CASE("multiplication", "[scaled_int]") {
         scaled_int_3_4_t x(unscaled_int_3_4_t(3));
         scaled_int_3_4_t y(unscaled_int_3_4_t(1));
 
-        REQUIRE(x * y == unscaled_int_3_4_t(3).scale());
+        REQUIRE(x * y == unscaled_int_7_8_t(3).scale());
     }
 
     SECTION("signed multiplication") {
@@ -73,10 +73,10 @@ TEST_CASE("multiplication", "[scaled_int]") {
             scaled_int_3_4_t y(unscaled_int_3_4_t(1));
             scaled_int_3_4_t y_(unscaled_int_3_4_t(-1));
 
-            REQUIRE(x * y == unscaled_int_3_4_t(3).scale());
-            REQUIRE(x_ * y == unscaled_int_3_4_t(-3).scale());
-            REQUIRE(x * y_ == unscaled_int_3_4_t(-3).scale());
-            REQUIRE(x_ * y_ == unscaled_int_3_4_t(3).scale());
+            REQUIRE(x * y == unscaled_int_7_8_t(3).scale());
+            REQUIRE(x_ * y == unscaled_int_7_8_t(-3).scale());
+            REQUIRE(x * y_ == unscaled_int_7_8_t(-3).scale());
+            REQUIRE(x_ * y_ == unscaled_int_7_8_t(3).scale());
         }
 
         {
@@ -86,10 +86,10 @@ TEST_CASE("multiplication", "[scaled_int]") {
             scaled_int_3_4_t y(unscaled_float_3_4_t(0.5f));
             scaled_int_3_4_t y_(unscaled_float_3_4_t(-0.5f));
 
-            REQUIRE(x * y == unscaled_float_3_4_t(0.1875f).scale());
-            REQUIRE(x_ * y == unscaled_float_3_4_t(-0.1875f).scale());
-            REQUIRE(x * y_ == unscaled_float_3_4_t(-0.1875f).scale());
-            REQUIRE(x_ * y_ == unscaled_float_3_4_t(0.1875f).scale());
+            REQUIRE(x * y == unscaled_float_7_8_t(0.1875f).scale());
+            REQUIRE(x_ * y == unscaled_float_7_8_t(-0.1875f).scale());
+            REQUIRE(x * y_ == unscaled_float_7_8_t(-0.1875f).scale());
+            REQUIRE(x_ * y_ == unscaled_float_7_8_t(0.1875f).scale());
         }
     }
 

@@ -78,6 +78,34 @@ TEST_CASE("addition", "[scaled_int]") {
     }
 }
 
+TEST_CASE("subtraction", "[scaled_int]") {
+
+    typedef scaled_int_15_16_t::unscaled_float_type unscaled_float_15_16_t;
+
+    SECTION("signed subtraction") {
+        const scaled_int_15_16_t x(unscaled_float_15_16_t(1.5f));
+        const scaled_int_15_16_t x_(unscaled_float_15_16_t(-1.5f));
+
+        const scaled_int_15_16_t y(unscaled_float_15_16_t(4.25f));
+        const scaled_int_15_16_t y_(unscaled_float_15_16_t(-4.25f));
+
+        REQUIRE(x - y == unscaled_float_15_16_t(-2.75f).scale());
+        REQUIRE(x_ - y == unscaled_float_15_16_t(-5.75f).scale());
+        REQUIRE(x - y_ == unscaled_float_15_16_t(5.75f).scale());
+        REQUIRE(x_ - y_ == unscaled_float_15_16_t(2.75).scale());
+    }
+
+    SECTION("signed subtraction assignment") {
+        scaled_int_15_16_t x(unscaled_float_15_16_t(7.0f));
+
+        x -= scaled_int_15_16_t(unscaled_float_15_16_t(6.0f));
+        REQUIRE(x == unscaled_float_15_16_t(1.0f).scale());
+
+        x -= scaled_int_15_16_t(unscaled_float_15_16_t(-1.75f));
+        REQUIRE(x == unscaled_float_15_16_t(2.75f).scale());
+    }
+}
+
 TEST_CASE("multiplication", "[scaled_int]") {
 
     typedef scaled_int_3_4_t::unscaled_int_type unscaled_int_3_4_t;

@@ -5,7 +5,6 @@
 
 #include "catch/catch.hpp"
 
-#include <ostream>
 #include <stdio.h>
 
 using namespace fixed_point;

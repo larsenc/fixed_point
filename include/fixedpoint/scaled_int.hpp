@@ -274,8 +274,8 @@ namespace fixed_point {
 
 		scaled_int_type& operator/=(const scaled_int_type& rhs)
 		{
-			const intermediate_type intermediate = mValue / rhs.mValue;
-			mValue = intermediate << N;
+			const intermediate_type intermediate = ((static_cast<intermediate_type>(mValue) << (M + N)) / rhs.getValue());
+			mValue = detail::converter<M + N + 1, M + N, M, N, (M + N <= N)>::convert(intermediate);
 			return *this;
 		}
 
@@ -338,11 +338,12 @@ namespace fixed_point {
 		return scaled_int<M, N>(lhs.getValue() - rhs.getValue());
 	}
 
-	template<uint8_t M, uint8_t N>
-	scaled_int<M, N> operator/(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
+	template<uint8_t M_LHS, uint8_t N_LHS, uint8_t M_RHS, uint8_t N_RHS>
+	scaled_int<M_LHS + N_RHS + 1, M_RHS + N_LHS> operator/(const scaled_int<M_LHS, N_LHS>& lhs, const scaled_int<M_RHS, N_RHS>& rhs)
 	{
-		const typename scaled_int<M, N>::intermediate_type intermediate = lhs.getValue() / rhs.getValue();
-		return scaled_int<M, N>(intermediate << N);
+		typedef scaled_int<M_LHS + N_RHS + 1, M_RHS + N_LHS> result_scaled_int_type;
+		typename result_scaled_int_type::storage_type resultValue = lhs.getValue();
+		return result_scaled_int_type((resultValue << (M_RHS + N_RHS)) / rhs.getValue());
 	}
 
 	template<uint8_t M_LHS, uint8_t N_LHS, uint8_t M_RHS, uint8_t N_RHS>

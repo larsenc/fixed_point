@@ -163,15 +163,51 @@ TEST_CASE("multiplication", "[scaled_int]") {
 
 TEST_CASE("division", "[scaled_int]") {
 
-    typedef scaled_int_7_8_t::unscaled_int_type unscaled_int_7_8_t;
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
+
+    typedef scaled_int_7_8_t::unscaled_int_type unscaled_int_7_8_t;
     typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
+
+    typedef scaled_int<16, 15> scaled_int_16_15_t;
+    typedef scaled_int_16_15_t::unscaled_float_type unscaled_float_16_15_t;
+    typedef scaled_int_16_15_t::unscaled_int_type unscaled_int_16_15_t;
 
     SECTION("simple division 10.0 / 5.0 = 2.0") {
         scaled_int_7_8_t x(unscaled_int_7_8_t(10));
         scaled_int_7_8_t y(unscaled_int_7_8_t(5));
 
-        REQUIRE(x / y == unscaled_int_7_8_t(2).scale());
+        REQUIRE(x / y == unscaled_int_16_15_t(2).scale());
+    }
+
+    SECTION("signed division") {
+        scaled_int_7_8_t x(unscaled_float_7_8_t(0.375f));
+        scaled_int_7_8_t x_(unscaled_float_7_8_t(-0.375f));
+
+        scaled_int_7_8_t y(unscaled_float_7_8_t(0.5f));
+        scaled_int_7_8_t y_(unscaled_float_7_8_t(-0.5f));
+
+        REQUIRE(x / y == unscaled_float_16_15_t(0.75f).scale());
+        REQUIRE(x / y_ == unscaled_float_16_15_t(-0.75f).scale());
+        REQUIRE(x_ / y == unscaled_float_16_15_t(-0.75f).scale());
+        REQUIRE(x_ / y_ == unscaled_float_16_15_t(0.75f).scale());
+
+        REQUIRE(y / x == unscaled_float_16_15_t(1.3333333333333333333333333f).scale());
+        REQUIRE(y / x_ == unscaled_float_16_15_t(-1.3333333333333333333333333f).scale());
+        REQUIRE(y_ / x == unscaled_float_16_15_t(-1.3333333333333333333333333f).scale());
+        REQUIRE(y_ / x_ == unscaled_float_16_15_t(1.3333333333333333333333333f).scale());
+    }
+
+    SECTION("signed assignment division") {
+        scaled_int_3_4_t x(unscaled_float_3_4_t(1.3125f));
+
+        x /= scaled_int_3_4_t(unscaled_float_3_4_t(0.625f));
+
+        // Equals: 2.1, closes in Q3.4 is 2.125
+        REQUIRE(x == unscaled_float_3_4_t(2.125f).scale());
+
+        x /= scaled_int_3_4_t(unscaled_float_3_4_t(-2.0f));
+
+        REQUIRE(x == unscaled_float_3_4_t(-1.0625f).scale());
     }
 }
 

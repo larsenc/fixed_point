@@ -160,24 +160,26 @@ namespace fixed_point {
 #endif
 
 	/**
-	*  scaled_int uses the Q format where M is the number of xx bits and N is the number of fraction bits.
+	*	scaled_int implements a fixed point number. It uses the Q format where M is the number of
+	*	integer bits and N is the number of fraction bits. The floating point number scaled_int
+	*	represents has the following range and resolution.
 	*
-	*        Range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] where M+N = 7,15,31
-	*   Resolution: 2^(-N)
+	*			 Range: [-(2^(M)), 2^(M) - 2^(-N)] where M+N = 7,15,31
+	*		Resolution: 2^(-N)
 	*
-	* Implemented operators:
-	*	Arthmetic:
-	*		a + b
-	*		a - b
-	*		a * b
-	*		a / b
-	*	Comparison:
-	*		a == b
-	*		a != b
-	*		a < b
-	*		a > b
-	*		a <= b
-	*		a >= b
+	*	Implemented operators:
+	*		Arthmetic:
+	*			a + b
+	*			a - b
+	*			a * b
+	*			a / b
+	*		Comparison:
+	*			a == b
+	*			a != b
+	*			a < b
+	*			a > b
+	*			a <= b
+	*			a >= b
 	*/
 	template<uint8_t M, uint8_t N>
 	class scaled_int

@@ -1,5 +1,5 @@
-#ifndef FIXED_POINT_HPP
-#define FIXED_POINT_HPP
+#ifndef SCALED_INT_HPP
+#define SCALED_INT_HPP
 
 #include <stdint.h>
 
@@ -104,7 +104,7 @@ namespace fixed_point {
 				// We therefore add half the resolution of the old value before shifting right
 
 				// Right shift of signed ints are compiler specific. I therefore want to use / instead of right shift.
-				// TODO: Determine if there is a more efficient way when using /
+				// TODO: Determine if there is a more efficient way when using division(/ operator).
 				if (value < 0) {
 					value -= (1 << (N_OLD - N_NEW - 1));
 				}
@@ -162,7 +162,7 @@ namespace fixed_point {
 	/**
 	*  scaled_int uses the Q format where M is the number of xx bits and N is the number of fraction bits.
 	*
-	*        Range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] NOTE: M+N = 7,15,31
+	*        Range: [-(2^(M) - 2^(-N)), 2^(M) - 2^(-N)] where M+N = 7,15,31
 	*   Resolution: 2^(-N)
 	*
 	* Implemented operators:
@@ -252,7 +252,7 @@ namespace fixed_point {
 		}
 
 		/**
-		*	Arthmetic assignment
+		*	Arthmetic assignment operators
 		*/
 		scaled_int_type& operator+=(const scaled_int_type& rhs)
 		{
@@ -318,7 +318,7 @@ namespace fixed_point {
 	};
 
 	/**
-	*	Arthmetic
+	*	Arthmetic operators
 	*/
 	template<uint8_t M, uint8_t N>
 	scaled_int<M, N> operator+(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
@@ -354,4 +354,4 @@ namespace fixed_point {
 
 } // namespace fixed_point
 
-#endif // !FIXED_POINT_HPP
+#endif // !SCALED_INT_HPP

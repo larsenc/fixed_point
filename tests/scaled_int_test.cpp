@@ -5,8 +5,6 @@
 
 #include "catch/catch.hpp"
 
-#include <stdio.h>
-
 using namespace fixed_point;
 
 namespace Catch {
@@ -31,7 +29,7 @@ TEST_CASE("scaling", "[scaled_int]") {
 
         REQUIRE(scaled.getValue() == 80);
 
-        SECTION("scaling back down to an int should without any changes should result in the same value as it was constructed from") {
+        SECTION("scaling back down to an int should, without any changes, result in the same value it was constructed from") {
             REQUIRE(scaled.unscaleToInt().value == 5);
         }
     }
@@ -43,7 +41,7 @@ TEST_CASE("scaling", "[scaled_int]") {
 
         REQUIRE(scaled.getValue() == 14);
 
-        SECTION("scaling back down to a float should without any changes should result in the same value as it was constructed from") {
+        SECTION("scaling back down to a float should, without any changes, result in the same value it was constructed from") {
             REQUIRE(scaled.unscaleToFloat().value == 0.875f);
         }
     }
@@ -153,12 +151,12 @@ TEST_CASE("multiplication", "[scaled_int]") {
 
         x *= scaled_int_3_4_t(unscaled_float_3_4_t(0.625f));
 
-        // Equals: 0.8203125, closes in Q3.4 is 0.8125
+        // Equals: 0.8203125, closest in Q3.4 is 0.8125
         REQUIRE(x == unscaled_float_3_4_t(0.8125f).scale());
 
         x *= scaled_int_3_4_t(unscaled_float_3_4_t(0.5f));
 
-        // Equals: 0.40625, should be rounded up to 0.4375, closes value in Q3.4
+        // Equals: 0.40625, closest in Q3.4 is 0.4375
         REQUIRE(x == unscaled_float_3_4_t(0.4375f).scale());
     }
 }
@@ -224,7 +222,6 @@ TEST_CASE("converting a negative Q7.8 to a Q3.4 with rounding", "[scaled_int]") 
         REQUIRE(a == b);
     }
 }
-
 
 int main(int argc, char** argv)
 {

@@ -160,7 +160,7 @@ namespace fixed_point {
 #endif
 
 	/**
-	*	scaled_int implements a fixed point number. It uses the Q format where M is the number of
+	*	scaled_int implements a fixed point number. It uses the QM.N format where M is the number of
 	*	integer bits and N is the number of fraction bits. The floating point number scaled_int
 	*	represents has the following range and resolution.
 	*

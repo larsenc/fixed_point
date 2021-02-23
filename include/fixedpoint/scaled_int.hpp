@@ -59,12 +59,6 @@ namespace fixed_point {
 			typedef int64_t type;
 		};
 
-		template<>
-		struct intermediate_storage<63>
-		{
-			typedef int64_t type;
-		};
-
 		template<uint8_t M_OLD, uint8_t N_OLD, uint8_t M_NEW, uint8_t N_NEW, bool MORE_PRECISION>
 		struct converter;
 

@@ -5,7 +5,7 @@
 
 namespace fixed_point {
 
-	template<uint8_t M, uint8_t N>
+	template<uint8_t TM, uint8_t TN>
 	class scaled_int;
 
 	namespace detail {
@@ -181,10 +181,16 @@ namespace fixed_point {
 	*			a <= b
 	*			a >= b
 	*/
-	template<uint8_t M, uint8_t N>
+	template<uint8_t TM, uint8_t TN>
 	class scaled_int
 	{
 	public:
+		enum {
+			M = TM,
+			N = TN,
+			SCALE = 1 << N
+		};
+
 		typedef scaled_int<M, N>									scaled_int_type;
 		typedef typename detail::storage<M + N>::type				storage_type;
 		typedef typename detail::intermediate_storage<M+N>::type	intermediate_type;
@@ -192,8 +198,6 @@ namespace fixed_point {
 #ifdef WITH_FLOAT_CONVERSION
 		typedef unscaled_float<M, N>								unscaled_float_type;
 #endif
-
-		enum { SCALE = 1 << N };
 
 		scaled_int()
 			: mValue(0)

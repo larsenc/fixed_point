@@ -111,11 +111,20 @@ TEST_CASE("multiplication", "[scaled_int]") {
     typedef scaled_int_3_4_t::unscaled_float_type unscaled_float_3_4_t;
     typedef scaled_int_7_8_t::unscaled_float_type unscaled_float_7_8_t;
 
-    SECTION("bigger intermediate storage is required when multiplying 3.0 * 1.0 = 3.0") {
-        scaled_int_3_4_t x(unscaled_int_3_4_t(3));
-        scaled_int_3_4_t y(unscaled_int_3_4_t(1));
+    SECTION("bigger intermediate storage") {
+        {
+            scaled_int_3_4_t x(unscaled_int_3_4_t(3));
+            scaled_int_3_4_t y(unscaled_int_3_4_t(1));
 
-        REQUIRE(x * y == unscaled_int_7_8_t(3).scale());
+            REQUIRE(x * y == unscaled_int_7_8_t(3).scale());
+        }
+
+        {
+            scaled_int<12, 19> x(52428);
+            scaled_int<15, 16> y(3276800);
+            scaled_int<28, 35> z(171796070400);
+            REQUIRE(x * y == z);
+        }
     }
 
     SECTION("signed multiplication") {

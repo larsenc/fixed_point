@@ -38,6 +38,12 @@ namespace fixed_point {
 			typedef int32_t type;
 		};
 
+		template<>
+		struct storage<63>
+		{
+			typedef int64_t type;
+		};
+
 		template<uint8_t TSize>
 		struct intermediate_storage;
 
@@ -55,6 +61,12 @@ namespace fixed_point {
 
 		template<>
 		struct intermediate_storage<31>
+		{
+			typedef int64_t type;
+		};
+
+		template<>
+		struct intermediate_storage<63>
 		{
 			typedef int64_t type;
 		};
@@ -164,7 +176,7 @@ namespace fixed_point {
 	*	integer bits and N is the number of fraction bits. The floating point number scaled_int
 	*	represents has the following range and resolution.
 	*
-	*			 Range: [-(2^(M)), 2^(M) - 2^(-N)] where M+N = 7,15,31
+	*			 Range: [-(2^(M)), 2^(M) - 2^(-N)] where M+N = 7,15,31,63
 	*		Resolution: 2^(-N)
 	*
 	*	Implemented operators:
@@ -180,6 +192,9 @@ namespace fixed_point {
 	*			a > b
 	*			a <= b
 	*			a >= b
+	*
+	*	Note: Only subtraction and addition operators available when M+N=63
+	*
 	*/
 	template<uint8_t TM, uint8_t TN>
 	class scaled_int
@@ -189,7 +204,6 @@ namespace fixed_point {
 			M = TM,
 			N = TN,
 			BIT_SIZE = TM + TN + 1
-			SCALE = 1 << N
 		};
 
 		typedef scaled_int<M, N>									scaled_int_type;
@@ -239,13 +253,13 @@ namespace fixed_point {
 
 		unscaled_int_type unscaleToInt() const
 		{
-			return unscaled_int_type(mValue / SCALE);
+			return unscaled_int_type(mValue / (storage_type(1) << N));
 		}
 
 #ifdef WITH_FLOAT_CONVERSION
 		unscaled_float_type unscaleToFloat() const
 		{
-			return unscaled_float_type(static_cast<float>(mValue) / SCALE);
+			return unscaled_float_type(static_cast<float>(mValue) / (storage_type(1) << N));
 		}
 #endif
 
@@ -351,7 +365,8 @@ namespace fixed_point {
 	scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> operator*(const scaled_int<M_LHS, N_LHS>& lhs, const scaled_int<M_RHS, N_RHS>& rhs)
 	{
 		typedef scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> result_scaled_int_type;
-		typename result_scaled_int_type::storage_type resultValue = lhs.getValue() * rhs.getValue();
+		typedef typename result_scaled_int_type::storage_type storage_type;
+		const storage_type resultValue = static_cast<storage_type>(lhs.getValue()) * rhs.getValue();
 		return result_scaled_int_type(resultValue);
 	}
 

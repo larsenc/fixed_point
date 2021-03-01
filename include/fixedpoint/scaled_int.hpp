@@ -188,6 +188,7 @@ namespace fixed_point {
 		enum {
 			M = TM,
 			N = TN,
+			BIT_SIZE = TM + TN + 1
 			SCALE = 1 << N
 		};
 
@@ -202,13 +203,13 @@ namespace fixed_point {
 		scaled_int()
 			: mValue(0)
 		{
-			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
+			detail::static_assert_<BIT_SIZE == 8 * sizeof(storage_type)>();
 		}
 
 		explicit scaled_int(const storage_type& scaledValue)
 			: mValue(scaledValue)
 		{
-			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
+			detail::static_assert_<BIT_SIZE == 8 * sizeof(storage_type)>();
 		}
 
 		scaled_int(const scaled_int_type& scaledValue)

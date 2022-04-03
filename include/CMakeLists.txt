@@ -9,7 +9,7 @@ target_include_directories(fixedpoint INTERFACE
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
 	"${PROJECT_BINARY_DIR}/fixedpointConfigVersion.cmake"
-	VERSION 0.1 # TODO: make it a variable
+	VERSION ${CURRENT_VERSION}
 	COMPATIBILITY AnyNewerVersion
 )
 

@@ -1,53 +1,64 @@
 ﻿cmake_minimum_required(VERSION 3.10)
 
-project(fixedpoint VERSION 0.1 LANGUAGES CXX)
+project("fixed_point"
+	VERSION 0.1
+	LANGUAGES CXX
+	DESCRIPTION "A header-only c++ library that provides a fixed point type, scaled_int, that follows the Q format."
+	HOMEPAGE_URL "https://github.com/larsenc/fixed_point")
 
-add_library(fixedpoint INTERFACE)
-target_include_directories(fixedpoint INTERFACE
-	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-	$<INSTALL_INTERFACE:include>
+option(FIXED_POINT_BUILD_TESTS "Build fixed point tests" ON)
+option(FIXED_POINT_BUILD_EXAMPLES "Build fixed point examples" ON)
+
+include(GNUInstallDirs)
+
+add_library(fixed_point INTERFACE)
+
+target_include_directories(fixed_point
+	INTERFACE	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+				$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+if(FIXED_POINT_BUILD_TESTS)
+	add_subdirectory(tests)
+endif()
+
+if(FIXED_POINT_BUILD_EXAMPLES)
+	add_subdirectory(examples)
+endif()
+
+install(TARGETS fixed_point
+	EXPORT ${PROJECT_NAME}_Targets
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-	"${PROJECT_BINARY_DIR}/fixedpointConfigVersion.cmake"
-	VERSION ${CURRENT_VERSION}
-	COMPATIBILITY AnyNewerVersion
-)
-
-install(TARGETS fixedpoint
-	EXPORT fixedpointTargets
-	LIBRARY DESTINATION lib COMPONENT Runtime
-	ARCHIVE DESTINATION lib COMPONENT Development
-	RUNTIME DESTINATION bin COMPONENT Runtime
-	PUBLIC_HEADER DESTINATION include COMPONENT Development
-	BUNDLE DESTINATION bin COMPONENT Runtime
+	"fixed_pointConfigVersion.cmake"
+	VERSION ${PROJECT_VERSION}
+	COMPATIBILITY SameMajorVersion
 )
 
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-	"${PROJECT_SOURCE_DIR}/cmake/fixedpointConfig.cmake.in"
-	"${PROJECT_BINARY_DIR}/fixedpointConfig.cmake"
-	INSTALL_DESTINATION lib/cmake/fixedpoint
+	"${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in"
+	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+	INSTALL_DESTINATION
+	${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake
 )
 
-install(EXPORT fixedpointTargets
-	DESTINATION lib/cmake/fixedpoint
+install(EXPORT ${PROJECT_NAME}_Targets
+	FILE ${PROJECT_NAME}Targets.cmake
+	NAMESPACE ${PROJECT_NAME}::
+	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake
 )
 
-install(FILES
-	"${PROJECT_BINARY_DIR}/fixedpointConfigVersion.cmake"
-	"${PROJECT_BINARY_DIR}/fixedpointConfig.cmake"
-	DESTINATION lib/cmake/fixedpoint
+install(FILES	"${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+				"${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+	DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake
 )
 
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
 	DESTINATION include
 )
-
-option(FIXEDPOINT_BUILD_TESTS "Build fixedpoint tests" ON)
-if(FIXEDPOINT_BUILD_TESTS)
-	add_subdirectory(tests)
-endif()
-
-export(PACKAGE fixedpoint)

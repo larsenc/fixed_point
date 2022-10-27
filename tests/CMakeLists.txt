@@ -9,6 +9,6 @@ add_executable(scaled_int_test "scaled_int_test.cpp")
 # Compile with c++98
 set_target_properties(scaled_int_test PROPERTIES CXX_STANDARD 98)
 target_compile_definitions(scaled_int_test PRIVATE WITH_FLOAT_CONVERSION)
-target_link_libraries(scaled_int_test PRIVATE fixedpoint Catch)
+target_link_libraries(scaled_int_test PRIVATE fixed_point Catch)
 
 add_test(NAME ScaledIntTest COMMAND scaled_int_test)

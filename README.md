@@ -1,4 +1,4 @@
-# fixedpoint
+# fixed_point
 
 This repository contains a type, scaled_int, that implements a signed fixed point number following the Q format.
 
@@ -6,7 +6,7 @@ scaled_int was developed to be compatible with c++98.
 
 ```c++
 #define WITH_FLOAT_CONVERSION
-#include <fixedpoint/scaled_int.hpp>
+#include <fixed_point/scaled_int.hpp>
 
 int main() {
 	using namespace fixed_point;

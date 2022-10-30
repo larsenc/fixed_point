@@ -29,6 +29,10 @@ int main() {
 ## Fixed point theory
 See the excellent paper by Randy Yates http://www.digitalsignallabs.com/downloads/fp.pdf
 
+
+## Choosing precision: Resolution and domain
+![](img/resolution_range.png)
+
 ## Alternatives
 If you are able to use a more recent version of c++, I would choose one of the following libraries instead
 

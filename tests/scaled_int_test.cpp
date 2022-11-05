@@ -79,6 +79,11 @@ TEST_CASE("addition", "[scaled_int]") {
 		REQUIRE(x_ + y == unscaled_float_15_16_t(2.75f).scale());
 		REQUIRE(x + y_ == unscaled_float_15_16_t(-2.75f).scale());
 		REQUIRE(x_ + y_ == unscaled_float_15_16_t(-5.75).scale());
+
+		const scaled_int_15_16_t z(unscaled_float_15_16_t(-6.75f));
+		const scaled_int_15_16_t q(unscaled_float_15_16_t(-4.25f));
+		const scaled_int_15_16_t w = z + q;
+		REQUIRE(w == unscaled_float_15_16_t(-11.0f).scale());
 	}
 
 	SECTION("signed addition assignment") {
@@ -104,6 +109,11 @@ TEST_CASE("subtraction", "[scaled_int]") {
 		REQUIRE(x_ - y == unscaled_float_15_16_t(-5.75f).scale());
 		REQUIRE(x - y_ == unscaled_float_15_16_t(5.75f).scale());
 		REQUIRE(x_ - y_ == unscaled_float_15_16_t(2.75).scale());
+
+		const scaled_int_15_16_t z(unscaled_float_15_16_t(-6.75f));
+		const scaled_int_15_16_t q(unscaled_float_15_16_t(-4.25f));
+		const scaled_int_15_16_t w = z - q;
+		REQUIRE(w == unscaled_float_15_16_t(-2.5).scale());
 	}
 
 	SECTION("signed subtraction assignment") {

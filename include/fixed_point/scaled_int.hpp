@@ -380,29 +380,32 @@ namespace fixed_point {
 	template<uint8_t M, uint8_t N>
 	scaled_int<M, N> operator+(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
 	{
-		return scaled_int<M, N>(lhs.getValue() + rhs.getValue());
+		typedef typename scaled_int<M, N>::storage_type storage_type;
+		return scaled_int<M, N>(static_cast<storage_type>(lhs.getValue() + rhs.getValue()));
 	}
 
 	template<uint8_t M, uint8_t N>
 	scaled_int<M, N> operator-(const scaled_int<M, N>& lhs, const scaled_int<M, N>& rhs)
 	{
-		return scaled_int<M, N>(lhs.getValue() - rhs.getValue());
+		typedef typename scaled_int<M, N>::storage_type storage_type;
+		return scaled_int<M, N>(static_cast<storage_type>(lhs.getValue() - rhs.getValue()));
 	}
 
 	template<uint8_t M_LHS, uint8_t N_LHS, uint8_t M_RHS, uint8_t N_RHS>
 	scaled_int<M_LHS + N_RHS + 1, M_RHS + N_LHS> operator/(const scaled_int<M_LHS, N_LHS>& lhs, const scaled_int<M_RHS, N_RHS>& rhs)
 	{
 		typedef scaled_int<M_LHS + N_RHS + 1, M_RHS + N_LHS> result_scaled_int_type;
-		typename result_scaled_int_type::storage_type resultValue = lhs.getValue();
-		return result_scaled_int_type((resultValue << (M_RHS + N_RHS)) / rhs.getValue());
+		typedef typename result_scaled_int_type::storage_type result_storage_type;
+		result_storage_type resultValue = lhs.getValue();
+		return result_scaled_int_type(static_cast<result_storage_type>((resultValue << (M_RHS + N_RHS)) / rhs.getValue()));
 	}
 
 	template<uint8_t M_LHS, uint8_t N_LHS, uint8_t M_RHS, uint8_t N_RHS>
 	scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> operator*(const scaled_int<M_LHS, N_LHS>& lhs, const scaled_int<M_RHS, N_RHS>& rhs)
 	{
 		typedef scaled_int<M_LHS + M_RHS + 1, N_LHS + N_RHS> result_scaled_int_type;
-		typedef typename result_scaled_int_type::storage_type storage_type;
-		const storage_type resultValue = static_cast<storage_type>(lhs.getValue()) * rhs.getValue();
+		typedef typename result_scaled_int_type::storage_type result_storage_type;
+		const result_storage_type resultValue = static_cast<result_storage_type>(lhs.getValue()) * rhs.getValue();
 		return result_scaled_int_type(resultValue);
 	}
 } // namespace fixed_point

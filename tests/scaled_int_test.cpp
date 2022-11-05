@@ -27,7 +27,7 @@ namespace Catch {
         static std::string convert(const scaled_int<M, N>& scaledInt) {
             typedef unscaled_double<M, N> unscaled_double_M_N_t;
             char str[20];
-            const double v = scaledInt.template unscale<unscaled_double_M_N_t>().value;
+            const double v = scaledInt.template unscale<double>();
             std::sprintf(str, "%f", v);
             return std::string(str);
         }
@@ -44,7 +44,7 @@ TEST_CASE("scaling", "[scaled_int]") {
         REQUIRE(scaled.getValue() == 80);
 
         SECTION("scaling back down to an int should, without any changes, result in the same value it was constructed from") {
-            REQUIRE(scaled.unscale<unscaled_int_3_4_t>().value == 5);
+            REQUIRE(scaled.unscale<int>() == 5);
         }
     }
 
@@ -56,7 +56,11 @@ TEST_CASE("scaling", "[scaled_int]") {
         REQUIRE(scaled.getValue() == 14);
 
         SECTION("scaling back down to a float should, without any changes, result in the same value it was constructed from") {
-            REQUIRE(scaled.unscale<unscaled_float_3_4_t>().value == 0.875f);
+            REQUIRE(scaled.unscale<float>() == 0.875f);
+        }
+
+        SECTION("scaling down to a double should, without any changes, result in the same value it was constructed from") {
+            REQUIRE(scaled.unscale<double>() == 0.875);
         }
     }
 }

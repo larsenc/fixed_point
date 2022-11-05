@@ -17,7 +17,7 @@ int main() {
 
 	scaled_int_7_8_t q(z.convert<7, 8>());
 
-	std::cout << "0.125 * 2.0 = " << q.unscale<unscaled_float_7_8_t>().value << std::endl;
+	std::cout << "0.125 * 2.0 = " << q.unscale<float>() << std::endl;
 
 	return 0;
 }

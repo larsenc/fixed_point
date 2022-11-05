@@ -13,6 +13,18 @@ namespace fixed_point {
 		template<bool>
 		struct static_assert_;
 
+		template <typename T>
+		struct is_floating_point { enum { value = 0 }; };
+
+		template <>
+		struct is_floating_point<float> { enum { value = 1 }; };
+
+		template <>
+		struct is_floating_point<double> { enum { value = 1 }; };
+
+		template <>
+		struct is_floating_point<long double> { enum { value = 1 }; };
+
 		template<>
 		struct static_assert_<true>
 		{};
@@ -280,12 +292,11 @@ namespace fixed_point {
 			return mValue;
 		}
 
-		template<typename TUnscaled>
-		TUnscaled unscale() const
+		template<typename TReturnType>
+		TReturnType unscale() const
 		{
-			detail::static_assert_<(int)M == (int)TUnscaled::M>();
-			detail::static_assert_<(int)N == (int)TUnscaled::N>();
-			return TUnscaled(static_cast<typename TUnscaled::value_type>(mValue) / (storage_type(1) << N));
+			detail::static_assert_<detail::is_floating_point<TReturnType>::value || sizeof(TReturnType) >= sizeof(storage_type)>();
+			return static_cast<TReturnType>(mValue) / (storage_type(1) << N);
 		}
 
 		/**

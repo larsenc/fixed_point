@@ -131,32 +131,43 @@ namespace fixed_point {
 
 	} // namespace detail
 
-	template<uint8_t M, uint8_t N>
+	template<uint8_t TM, uint8_t TN>
 	struct unscaled_int
 	{
-		typedef typename detail::storage<M + N>::type storage_type;
+		enum {
+			M = TM,
+			N = TN
+		};
 
-		explicit unscaled_int(const storage_type& value)
+		typedef typename detail::storage<M + N>::type	storage_type;
+		typedef storage_type							value_type;
+
+		explicit unscaled_int(value_type value)
 			: value(value)
 		{
-			detail::static_assert_<M + N + 1== 8 * sizeof(storage_type)>();
+			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
 		}
 
 		scaled_int<M, N> scale() const
 		{
-			return scaled_int<M, N>(value << N);
+			return scaled_int<M, N>(static_cast<storage_type>(value << N));
 		}
 
-		const storage_type value;
+		const value_type value;
 	};
 
-#ifdef WITH_FLOAT_CONVERSION
-	template<uint8_t M, uint8_t N>
+	template<uint8_t TM, uint8_t TN>
 	struct unscaled_float
 	{
-		typedef typename detail::storage<M + N>::type storage_type;
+		enum {
+			M = TM,
+			N = TN
+		};
 
-		explicit unscaled_float(const float& value)
+		typedef typename detail::storage<M + N>::type	storage_type;
+		typedef float									value_type;
+
+		explicit unscaled_float(value_type value)
 			: value(value)
 		{
 			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
@@ -167,9 +178,33 @@ namespace fixed_point {
 			return scaled_int<M, N>(static_cast<storage_type>(value * (1 << N)));
 		}
 
-		const float value;
+		const value_type value;
 	};
-#endif
+
+	template<uint8_t TM, uint8_t TN>
+	struct unscaled_double
+	{
+		enum {
+			M = TM,
+			N = TN
+		};
+
+		typedef typename detail::storage<M + N>::type	storage_type;
+		typedef double									value_type;
+
+		explicit unscaled_double(value_type value)
+			: value(value)
+		{
+			detail::static_assert_<M + N + 1 == 8 * sizeof(storage_type)>();
+		}
+
+		scaled_int<M, N> scale() const
+		{
+			return scaled_int<M, N>(static_cast<storage_type>(value * (1 << N)));
+		}
+
+		const value_type value;
+	};
 
 	/**
 	*	scaled_int implements a fixed point number. It uses the QM.N format where M is the number of
@@ -209,10 +244,6 @@ namespace fixed_point {
 		typedef scaled_int<M, N>									scaled_int_type;
 		typedef typename detail::storage<M + N>::type				storage_type;
 		typedef typename detail::intermediate_storage<M+N>::type	intermediate_type;
-		typedef unscaled_int<M, N>									unscaled_int_type;
-#ifdef WITH_FLOAT_CONVERSION
-		typedef unscaled_float<M, N>								unscaled_float_type;
-#endif
 
 		scaled_int()
 			: mValue(0)
@@ -230,15 +261,13 @@ namespace fixed_point {
 			: mValue(scaledValue.mValue)
 		{}
 
-		scaled_int(const unscaled_int_type& unscaled)
+		template<typename TUnscaled>
+		scaled_int(const TUnscaled& unscaled)
 			: mValue(unscaled.scale().mValue)
-		{}
-
-#ifdef WITH_FLOAT_CONVERSION
-		scaled_int(const unscaled_float_type& unscaled)
-			: mValue(unscaled.scale().mValue)
-		{}
-#endif
+		{
+			detail::static_assert_<(int)M == (int)TUnscaled::M>();
+			detail::static_assert_<(int)N == (int)TUnscaled::N>();
+		}
 
 		scaled_int_type& operator=(const scaled_int_type& rhs)
 		{
@@ -251,17 +280,13 @@ namespace fixed_point {
 			return mValue;
 		}
 
-		unscaled_int_type unscaleToInt() const
+		template<typename TUnscaled>
+		TUnscaled unscale() const
 		{
-			return unscaled_int_type(mValue / (storage_type(1) << N));
+			detail::static_assert_<(int)M == (int)TUnscaled::M>();
+			detail::static_assert_<(int)N == (int)TUnscaled::N>();
+			return TUnscaled(static_cast<typename TUnscaled::value_type>(mValue) / (storage_type(1) << N));
 		}
-
-#ifdef WITH_FLOAT_CONVERSION
-		unscaled_float_type unscaleToFloat() const
-		{
-			return unscaled_float_type(static_cast<float>(mValue) / (storage_type(1) << N));
-		}
-#endif
 
 		/**
 		*	Convert to another Q format.
@@ -369,11 +394,6 @@ namespace fixed_point {
 		const storage_type resultValue = static_cast<storage_type>(lhs.getValue()) * rhs.getValue();
 		return result_scaled_int_type(resultValue);
 	}
-
-	typedef scaled_int<3, 4>	scaled_int_3_4_t;
-	typedef scaled_int<7, 8>	scaled_int_7_8_t;
-	typedef scaled_int<15, 16>	scaled_int_15_16_t;
-
 } // namespace fixed_point
 
 #endif // !SCALED_INT_HPP

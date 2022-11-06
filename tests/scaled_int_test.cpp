@@ -46,7 +46,7 @@ TEST_CASE("scaling", "[scaled_int]") {
 		unscaled_float_3_4_t unscaled(5);
 		scaled_int_3_4_t scaled = unscaled.scale();
 
-		REQUIRE(scaled.getValue() == 80);
+		REQUIRE(scaled.value() == 80);
 
 		SECTION("scaling back down to an int should, without any changes, result in the same value it was constructed from") {
 			REQUIRE(scaled.unscale<int>() == 5);
@@ -58,7 +58,7 @@ TEST_CASE("scaling", "[scaled_int]") {
 		unscaled_float_3_4_t unscaled(0.875f);
 		scaled_int_3_4_t scaled = unscaled.scale();
 
-		REQUIRE(scaled.getValue() == 14);
+		REQUIRE(scaled.value() == 14);
 
 		SECTION("scaling back down to a float should, without any changes, result in the same value it was constructed from") {
 			REQUIRE(scaled.unscale<float>() == 0.875f);
@@ -278,7 +278,7 @@ TEST_CASE("pre increment/decrement operator", "[scaled_int]") {
 
 	SECTION("pre increment") {
 		++scaled;
-		REQUIRE(original_scaled.getValue() + 1 == scaled.getValue());
+		REQUIRE(original_scaled.value() + 1 == scaled.value());
 		REQUIRE(scaled == scaled_int_17_14_t(unscaled_double_17_14_t(0.0001220703125)));
 	}
 
@@ -286,7 +286,7 @@ TEST_CASE("pre increment/decrement operator", "[scaled_int]") {
 
 	SECTION("pre decrement") {
 		--scaled;
-		REQUIRE(original_scaled.getValue() - 1 == scaled.getValue());
+		REQUIRE(original_scaled.value() - 1 == scaled.value());
 		REQUIRE(scaled == scaled_int_17_14_t(unscaled_double_17_14_t(0.0)));
 	}
 }

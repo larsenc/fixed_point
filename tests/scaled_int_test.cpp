@@ -10,11 +10,14 @@ using namespace fixed_point;
 typedef scaled_int<3, 4>	scaled_int_3_4_t;
 typedef scaled_int<7, 8>	scaled_int_7_8_t;
 typedef scaled_int<15, 16>	scaled_int_15_16_t;
+typedef scaled_int<17, 14>	scaled_int_17_14_t;
 
 typedef unscaled_float<3, 4>    unscaled_float_3_4_t;
 typedef unscaled_float<7, 8>    unscaled_float_7_8_t;
 typedef unscaled_float<15, 16>  unscaled_float_15_16_t;
 typedef unscaled_float<16, 15>  unscaled_float_16_15_t;
+
+typedef unscaled_double<17, 14>  unscaled_double_17_14_t;
 
 typedef unscaled_int<3, 4>      unscaled_int_3_4_t;
 typedef unscaled_int<7, 8>      unscaled_int_7_8_t;
@@ -263,6 +266,28 @@ TEST_CASE("converting a negative Q7.8 to a Q3.4 with rounding", "[scaled_int]") 
 		scaled_int_3_4_t a = scaled_int_7_8_t(unscaled_float_7_8_t(-2.0390625f)).convert<3, 4>();
 		scaled_int_3_4_t b(unscaled_float_3_4_t(-2.0625f));
 		REQUIRE(a == b);
+	}
+}
+
+TEST_CASE("pre increment/decrement operator", "[scaled_int]") {
+
+	unscaled_double_17_14_t unscaled(0.00006103515625);
+	scaled_int_17_14_t scaled = unscaled.scale();
+
+	scaled_int_17_14_t original_scaled = scaled;
+
+	SECTION("pre increment") {
+		++scaled;
+		REQUIRE(original_scaled.getValue() + 1 == scaled.getValue());
+		REQUIRE(scaled == scaled_int_17_14_t(unscaled_double_17_14_t(0.0001220703125)));
+	}
+
+	scaled = original_scaled;
+
+	SECTION("pre decrement") {
+		--scaled;
+		REQUIRE(original_scaled.getValue() - 1 == scaled.getValue());
+		REQUIRE(scaled == scaled_int_17_14_t(unscaled_double_17_14_t(0.0)));
 	}
 }
 

@@ -338,6 +338,21 @@ namespace fixed_point {
 		}
 
 		/**
+		*	Increment/decrement prefix operators
+		*/
+		scaled_int_type& operator++()
+		{
+			++mValue;
+			return *this;
+		}
+
+		scaled_int_type& operator--()
+		{
+			--mValue;
+			return *this;
+		}
+
+		/**
 		*	Comparison operators
 		*/
 		bool operator==(const scaled_int_type& rhs) const

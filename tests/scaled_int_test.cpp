@@ -2,6 +2,7 @@
 #define CATCH_CONFIG_NO_CPP11
 
 #include <fixed_point/scaled_int.hpp>
+#include <fixed_point/unscaled_int.hpp>
 
 #include "catch/catch.hpp"
 

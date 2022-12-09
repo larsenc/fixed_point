@@ -6,6 +6,7 @@ scaled_int was developed to be compatible with c++98.
 
 ```c++
 #include <fixed_point/scaled_int.hpp>
+#include <fixed_point/unscaled_int.hpp>
 
 #include <iostream>
 

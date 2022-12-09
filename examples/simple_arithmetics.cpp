@@ -1,4 +1,5 @@
 #include <fixed_point/scaled_int.hpp>
+#include <fixed_point/unscaled_int.hpp>
 
 #include <iostream>
 
